@@ -1,9 +1,13 @@
 # README #
 
-Test application version. 
-In the application, there is no dynamic addition of the dimension of the matrix. 
-The dimension of the matrix is given by a variable.
-In the near future, I will do a code refactoring, add styles and a form for user input.
+The final version of the application.
+The user enters the dimension of the matrix in the input field. 
+After clicking on the send button, the option "animation speed" appears in the address bar. 
+The default is 1000. You can change the value of a parameter by entering a different value. 
+After entering a new value, you need to press the button "Enter".
+After entering the dimension, the matrix is gradually filled with values. 
+Each individual value is represented by a square. 
+The matrix is filled counter-clockwise in a spiral.
 
 ### What is this repository for? ###
 
