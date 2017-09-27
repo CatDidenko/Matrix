@@ -1,37 +1,45 @@
  
 /**
-* This feature displays alternately filled cells of 
-* the table to the page.
+* This function hides the table when the button "Go" is clicked 
+* and displays alternately filled  table of the table to the page.
 * @variable {number} dimension
 *   the dimension of the matrix that the user enters
 * @variable {number} counter
 *   variable that is used to move through the coordinate array
+* @variable {array} args
+*   filled array matrix and filled array indexArray
+* @variable {reference} table
+*   a table with rows and cells
 */
 function drawTable(form) {
 
   dimension = document.getElementById('number').value;
   counter = 0;
 
-  validateForm(dimension, form);
+  if ( isFormValid() ) {
+    form.classList.add('hide');
+    args = makeMatrix();
+    table = makeTable();
+    drawCells();
+  }
 }
 
 
 /**
 * This function checks the dimension of the matrix that the user
-* entered. If the number satisfies the conditions, the hideForm 
-* function is called. Otherwise, a warning is displayed on the page.
-* @parametr {number} dimension
+* entered. If the number satisfies the conditions, the function returns true. 
+* Otherwise, a warning is displayed on the page and function returns false.
+* @variable {number} dimension
 *   the dimension of the matrix that the user enters
-* @param {reference} form 
-*   element reference
 */
-function validateForm(dimension, form) {
+function isFormValid() {
 
   if (dimension % 1 == 0 && dimension > 0 && dimension <= 1000) {
-      hideForm(dimension, form);
+      return true;
   } else {
       document.getElementById('number').value = "";
       alert('Enter a number in the range from 1 to 1000');
+      return false;
   }
 }
 
@@ -50,7 +58,7 @@ function validateForm(dimension, form) {
 * @return {reference} table
 * returns a table with rows and cells
 */
-function makeTable(dimension){
+function makeTable(){
 
   var table = document.getElementById('myTable');
 
@@ -58,39 +66,12 @@ function makeTable(dimension){
     var tr = document.createElement('tr');
     table.appendChild(tr);
 
-    for (var rows = 0; rows < dimension; rows++) {
+     for (var rows = 0; rows < dimension; rows++) {
       var td = document.createElement('td');
       tr.appendChild(td);
-    }
+     }
   }
-      return table;
-}
-
-
-/**
-* This function hides the table when the button "Go" is clicked
-* and calls the function fillTableCells
-* @parametr {number} dimension
-*   the dimension of the matrix that the user enters
-* @param {reference} form 
-*   element reference
-* @variable {string} speed
-*   the rate of appearance of the matrix of cells
-* @variable {number} intervalId
-*   timer identifier
-*/
-function hideForm(dimension, form) {
-
-  var speed = setSpeed();
-  if (speed == undefined) {
-    speed = 1000;
-  }
-
-  console.log(speed);
-
-  form.classList.add('hide');
-  intervalId = setInterval(fillTableCells, speed);
-  
+  return table;
 }
 
 
@@ -98,18 +79,37 @@ function hideForm(dimension, form) {
 * This function sets the speed at which a new filled cell 
 * appears on the page. Speed is set by the user when adding 
 * a specific hash to the address bar.
-* @variable {string} hash
-*   hash that the user entered into the address bar
 * @variable {string} speed
 *   number which sets the speed
 * @return {string} speed
 */
 function setSpeed() {
 
-  var hash = window.location.hash;
-  var speed = hash.split("=")[1];
+  var speed = window.location.hash.split("=")[1];
+
+  if (speed == undefined) {
+    speed = 1000;
+  }
 
   return speed;
+}
+
+
+/**
+* This function displays the filled cells
+* @variable {string} speed
+*   the rate of appearance of the matrix of cells
+* @variable {number} intervalId
+*   timer identifier
+* @return {number} intervalId
+*   timer identifier
+*/
+function drawCells() {
+
+  var speed = setSpeed();
+  intervalId = setInterval(fillTableCells, speed);
+
+  return intervalId;
 }
 
 
@@ -129,7 +129,7 @@ function setSpeed() {
 * @return {array} numbers
 *  an array that contains numbers without digits 6
 */
-function arraySort(dimension) {
+function arraySort() {
 
   var index = 0;
   var countOfCells = Math.pow(dimension, 2);
@@ -179,9 +179,9 @@ function arraySort(dimension) {
 * @return {array} args
 *  returns the filled array matrix and filled array indexArray
 */
-function makeMatrix (dimension) {
+function makeMatrix () {
 
-  var numbers = arraySort(dimension);
+  var numbers = arraySort();
   var indexArray = [];
   var i = 0;
   var j = 0;
@@ -211,7 +211,6 @@ function makeMatrix (dimension) {
       
           i += direction[currentDirectionIndex][0];
           j += direction[currentDirectionIndex][1];
-
       } 
   }
     var args = [matrix, indexArray];
@@ -221,7 +220,7 @@ function makeMatrix (dimension) {
 
 
 /**
-* Function prints cell values for a table in a spiral.
+* Function fills cells values for a table in a spiral.
 * @variable {array} indexArray
 *  an array that contains coordinates of all cells
 * @variable {number} i
@@ -230,16 +229,14 @@ function makeMatrix (dimension) {
 *   number of the cell in table
 * @variable {array} matrix
 *  an array that contains certain numbers in a spiral
-* @variable {reference} table
-*  	returns a reference to an element by its ID
 */
 function fillTableCells() {
 
-  var indexArray = makeMatrix(dimension)[1];
+  var indexArray = args[1];
   var i = indexArray[counter][0];
   var j = indexArray[counter][1];
-  var matrix = makeMatrix(dimension)[0];
-  var table = makeTable(dimension);
+  var matrix = args[0];
+  var countOfCells = Math.pow(dimension, 2);
 
 
   table.rows[i].cells[j].innerHTML = matrix[i][j];
@@ -247,7 +244,7 @@ function fillTableCells() {
 
   counter++;
 
-    if ( counter === Math.pow(dimension, 2) ) {
+    if ( counter === countOfCells ) {
       clearInterval(intervalId);
     }
 }
